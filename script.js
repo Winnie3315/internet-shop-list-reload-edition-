@@ -1,6 +1,6 @@
- // Покажите товары по следующему массиву
+// Покажите товары по следующему массиву
 
- export let arr = [{
+let arr = [{
     "id": 1,
     "title": "Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops",
     "price": 109.95,
@@ -305,9 +305,12 @@ function reload(arr, place) {
 }
 
 let products = document.querySelector('.products');
+const total_view = document.querySelector(".all-price-number") 
 function reloadCart(arr2, place) {
     place.innerHTML = '';
+    let total = 0
     for (let item of arr2) {
+        total += item.price
         let product = document.createElement('div');
 
         let productView = document.createElement('div');
@@ -323,6 +326,7 @@ function reloadCart(arr2, place) {
         let plus = document.createElement('span');
 
         let prdPrice = document.createElement('h3');
+        let removeBtn = document.createElement("button")
 
         product.classList.add('product');
         productView.classList.add('product-view');
@@ -331,6 +335,7 @@ function reloadCart(arr2, place) {
         prdPhoto.classList.add('product-photo');
         prdImg.classList.add('product-img');
         prdName.classList.add('product-name');
+        removeBtn.classList.add('remove-btn')
 
         counter.classList.add('counter');
         minus.id = 'minus';
@@ -344,7 +349,7 @@ function reloadCart(arr2, place) {
         productView.append(prdPhoto, prdName);
         prdPhoto.append(prdImg);
 
-        productTools.append(counter, prdPrice);
+        productTools.append(counter, prdPrice, removeBtn );
         counter.append(minus, count, plus);
 
         prdImg.src = item.image;
@@ -355,11 +360,14 @@ function reloadCart(arr2, place) {
         count.innerHTML = "1";
         plus.innerHTML = "&plus;";
 
+        removeBtn.innerHTML = "remove"
+
         prdPrice.innerHTML = "$" + item.price;
 
         let countNum = 1;
+        let total_price = item.price;
         plus.onclick = () => {
-            if (countNum < 100) {
+            if (countNum < item.rating.count) {
                 countNum++;
                 count.innerHTML = countNum;
                 let prdPriceNum = prdPrice.innerText.split('$');
@@ -370,7 +378,10 @@ function reloadCart(arr2, place) {
                     let numItem = item.innerText.split('$');
                     allPricesNum += +numItem[numItem.length - 1];
                 });
-                allPriceView.innerHTML = "$" + allPricesNum;
+                // allPriceView.innerHTML = "$" + allPricesNum;
+                total += item.price
+                total_view.innerHTML = (total).toFixed(2)
+
             }
         }
 
@@ -386,7 +397,9 @@ function reloadCart(arr2, place) {
                     let numItem = item.innerText.split('$');
                     allPricesNum += +numItem[numItem.length - 1];
                 });
-                allPriceView.innerHTML = "$" + allPricesNum;
+                // allPriceView.innerHTML = "$" + allPricesNum;
+                total -= item.price
+                total_view.innerHTML = (total).toFixed(2)
             }
 
             if (countNum === 0) {
@@ -395,20 +408,26 @@ function reloadCart(arr2, place) {
                 reload(arr, slots);
             }
         }
+        removeBtn.onclick = () =>{
+        cart.splice(cart.indexOf(item), 1);
+       
+        product.remove();
+        total -= item.price * countNum;
+        total_view.innerHTML = total.toFixed(2);
+        reloadCart(cart, products);
+        reload(arr, slots);
+
+       
+     
+    }
     }
 
-    let allPrices = document.querySelectorAll('#product-price');
-    let allPricesNum = 0;
-    allPrices.forEach(item => {
-        let numItem = item.innerText.split('$');
-        allPricesNum += +numItem[numItem.length - 1];
-    });
-    let allPriceView = document.querySelector('.all-price-number');
-    allPriceView.innerHTML = "$" + allPricesNum;
-
-    let allCount = document.querySelector('.all-count-number');
-    allCount.innerHTML = arr2.length;
+    total_view.innerHTML = (total).toFixed(2)
+    
+     let allQuantity = document.querySelector(".all-count-number")
+        allQuantity.innerHTML = arr2.length;
 }
+
 
 const body = document.body;
 let slots = document.querySelector('.slots');
@@ -437,3 +456,4 @@ menuBtn.onclick = () => {
 closeMenu.onclick = () => {
     menu.classList.remove('menu_active');
 }
+
