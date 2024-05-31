@@ -457,3 +457,5 @@ closeMenu.onclick = () => {
     menu.classList.remove('menu_active');
 }
 
+
+
